@@ -1,0 +1,19 @@
+#/bin/bash
+
+# This file holds the references to usernames, hostnames, etc
+source .secrets
+
+HASSIO_USER=$SECRETS_HASSIO_USER
+HASSIO_HOST=$SECRETS_HASSIO_HOST
+
+DATE=`date +%Y-%m-%d`
+HASSIO_BACKUP_DIR="hassio.backups"
+HASSIO_NEW_BACKUP_FOLDER_PREFIX="backup"
+
+# Make directory for newest backup
+mkdir ~/$HASSIO_BACKUP_DIR/$HASSIO_NEW_BACKUP_FOLDER_PREFIX-$DATE
+
+# Sync!
+rsync -az $HASSIO_USER@$HASSIO_HOST:/config/ ~/$HASSIO_BACKUP_DIR/$HASSIO_NEW_BACKUP_FOLDER_PREFIX-$DATE/
+
+echo 'Done'
