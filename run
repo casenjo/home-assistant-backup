@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 
 # Some constants for use
 COLOR_RED='\033[31m'
@@ -7,8 +7,11 @@ COLOR_BG_GREEN='\033[42m'
 COLOR_YELLOW='\033[33m'
 COLOR_NORMAL='\033[0m'
 
+# Useful one-liner to get the full dir name of the current script
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+
 # This file holds the references to usernames, hostnames, etc
-source ./.secrets
+source $DIR/.secrets
 
 HASSIO_USER=$SECRETS_HASSIO_USER
 HASSIO_HOST=$SECRETS_HASSIO_HOST
