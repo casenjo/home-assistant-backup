@@ -21,6 +21,13 @@ DATE=`date +%Y-%m-%d`
 # Create MySQL DB dump of Home Assistant
 mysqldump --user=$HASSIO_DB_USER --password=$HASSIO_DB_PWD --default-character-set=utf8 "home_assistant" > /backup/homeassistant-$DATE.sql
 
+# Make use of the hassio-remote-backup file to bundle everything up nicely
+# (https://github.com/casenjo/hassio-remote-backup)
+cd ~ && tar cvf - /backup | gzip -9 - > homeassistant.tar.gz
+
+
+# rsync to the NAS
+
 
 # Sync!
 #rsync -az $HASSIO_USER@$HASSIO_HOST:/config/ $HASSIO_NEW_BACKUP_FOLDER_PATH/
