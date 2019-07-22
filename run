@@ -15,11 +15,16 @@ source $DIR/.secrets
 
 HASSIO_USER=$SECRETS_HASSIO_USER
 HASSIO_HOST=$SECRETS_HASSIO_HOST
+HASSIO_DB_USER=$SECRETS_HASSIO_DB_USER
+HASSIO_DB_PWD=$SECRETS_HASSIO_DB_PWD
 
 DATE=`date +%Y-%m-%d`
 HASSIO_BACKUP_DIR_PATH="/$SECRETS_USER_HOME/hassio.backups"
 HASSIO_NEW_BACKUP_FOLDER_PREFIX="backup"
 HASSIO_NEW_BACKUP_FOLDER_PATH=$HASSIO_BACKUP_DIR_PATH/$HASSIO_NEW_BACKUP_FOLDER_PREFIX-$DATE
+
+# Create MySQL DB dump of Home Assistant
+mysqldump --user=$HASSIO_DB_USER --password=$HASSIO_DB_PWD --default-character-set=utf8 "home_assistant" > /backup/homeassistant-$DATE.sql
 
 # Check backups directory exists
 if [ ! -d "$HASSIO_BACKUP_DIR_PATH" ]; then
