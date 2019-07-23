@@ -22,7 +22,9 @@ NAS_HOST="apollo"
 DATE=`date +%Y-%m-%d`
 
 # Create MySQL DB dump of Home Assistant
+printf "${COLOR_YELLOW}Taking a dump...\n${COLOR_NORMAL}"
 mysqldump --user=$HASSIO_DB_USER --password=$HASSIO_DB_PWD --default-character-set=utf8 "home_assistant" > /backup/homeassistant-$DATE.sql
+printf "${COLOR_GREEN}Dump finished!\n${COLOR_NORMAL}"
 
 # Make use of the hassio-remote-backup file to bundle everything up nicely
 # (https://github.com/casenjo/hassio-remote-backup)
