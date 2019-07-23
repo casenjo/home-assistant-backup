@@ -33,9 +33,13 @@ tar cvf - /backup | gzip -9 - > /tmp/homeassistant.tar.gz
 printf "${COLOR_GREEN}Bundle finished!\n${COLOR_NORMAL}"
 
 # rsync to the NAS
+printf "${COLOR_YELLOW}Sending bundle...\n${COLOR_NORMAL}"
+rsync -av --password-file=./rsync_pass /tmp/$BACKUP_FILE $NAS_USER@$NAS_HOST::Backups/
+printf "${COLOR_GREEN}Bundle sent!\n${COLOR_NORMAL}"
 
-
-# Sync!
-#rsync -az $HASSIO_USER@$HASSIO_HOST:/config/ $HASSIO_NEW_BACKUP_FOLDER_PATH/
+# Clean up
+printf "${COLOR_GREEN}Cleaning up...\n${COLOR_NORMAL}"
+rm -rf /tmp/$BACKUP_FILE
+rm -rf /backup/*.*
 
 printf "${COLOR_GREEN}Backup finished :)\n${COLOR_NORMAL}"
