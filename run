@@ -28,8 +28,9 @@ printf "${COLOR_GREEN}Dump finished!\n${COLOR_NORMAL}"
 
 # Make use of the hassio-remote-backup file to bundle everything up nicely
 # (https://github.com/casenjo/hassio-remote-backup)
-cd ~ && tar cvf - /backup | gzip -9 - > homeassistant.tar.gz
-
+printf "${COLOR_YELLOW}Making a bundle...\n${COLOR_NORMAL}"
+tar cvf - /backup | gzip -9 - > /tmp/homeassistant.tar.gz
+printf "${COLOR_GREEN}Bundle finished!\n${COLOR_NORMAL}"
 
 # rsync to the NAS
 
