@@ -13,32 +13,33 @@ DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 # This file holds the references to usernames, hostnames, etc
 source $DIR/.secrets
 
-HASSIO_USER=$SECRETS_HASSIO_USER
-HASSIO_HOST=$SECRETS_HASSIO_HOST
+BACKUP_FILE="homeassistant.tar.gz"
 HASSIO_DB_USER=$SECRETS_HASSIO_DB_USER
 HASSIO_DB_PWD=$SECRETS_HASSIO_DB_PWD
+NAS_USER="telepathic"
+NAS_HOST="apollo"
 
 DATE=`date +%Y-%m-%d`
-HASSIO_BACKUP_DIR_PATH="/$SECRETS_USER_HOME/hassio.backups"
-HASSIO_NEW_BACKUP_FOLDER_PREFIX="backup"
-HASSIO_NEW_BACKUP_FOLDER_PATH=$HASSIO_BACKUP_DIR_PATH/$HASSIO_NEW_BACKUP_FOLDER_PREFIX-$DATE
 
 # Create MySQL DB dump of Home Assistant
+printf "${COLOR_YELLOW}Taking a dump...\n${COLOR_NORMAL}"
 mysqldump --user=$HASSIO_DB_USER --password=$HASSIO_DB_PWD --default-character-set=utf8 "home_assistant" > /backup/homeassistant-$DATE.sql
+printf "${COLOR_GREEN}Dump finished!\n${COLOR_NORMAL}"
 
-# Check backups directory exists
-if [ ! -d "$HASSIO_BACKUP_DIR_PATH" ]; then
-  printf "${COLOR_YELLOW}Hassio backup dir not found, creating it...\n${COLOR_NORMAL}"
-  mkdir $HASSIO_BACKUP_DIR_PATH
-fi
+# Make use of the hassio-remote-backup file to bundle everything up nicely
+# (https://github.com/casenjo/hassio-remote-backup)
+printf "${COLOR_YELLOW}Making a bundle...\n${COLOR_NORMAL}"
+tar cvf - /backup | gzip -9 - > /tmp/homeassistant.tar.gz
+printf "${COLOR_GREEN}Bundle finished!\n${COLOR_NORMAL}"
 
-# Check that an existing backup already doesn't already exist
-if [ -d "$HASSIO_NEW_BACKUP_FOLDER_PATH" ]; then
-  printf "${COLOR_YELLOW}Backup already found for today, exiting...\n${COLOR_NORMAL}"
-  exit 1
-fi
+# rsync to the NAS
+printf "${COLOR_YELLOW}Sending bundle...\n${COLOR_NORMAL}"
+rsync -av --password-file=./rsync_pass /tmp/$BACKUP_FILE $NAS_USER@$NAS_HOST::Backups/
+printf "${COLOR_GREEN}Bundle sent!\n${COLOR_NORMAL}"
 
-# Sync!
-rsync -az $HASSIO_USER@$HASSIO_HOST:/config/ $HASSIO_NEW_BACKUP_FOLDER_PATH/
+# Clean up
+printf "${COLOR_GREEN}Cleaning up...\n${COLOR_NORMAL}"
+rm -rf /tmp/$BACKUP_FILE
+rm -rf /backup/*.*
 
 printf "${COLOR_GREEN}Backup finished :)\n${COLOR_NORMAL}"
